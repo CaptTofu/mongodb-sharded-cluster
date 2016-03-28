@@ -1,0 +1,18 @@
+// hack - to get auth set up
+db.dropUser('root')
+db.createUser({
+      user: "{{ mongo_admin_username }}",
+      pwd: "{{ mongo_admin_pass }}",
+      roles: [ { role: "root", db: "admin" }, 
+               { role: "userAdminAnyDatabase", db: "admin" }]
+  })
+db.dropUser('root')
+var schema = db.system.version.findOne({"_id" : "authSchema"})
+schema.currentVersion = 3
+db.system.version.save(schema)
+db.createUser({
+      user: "{{ mongo_admin_username }}",
+      pwd: "{{ mongo_admin_pass }}",
+      roles: [ { role: "root", db: "admin" }, 
+               { role: "userAdminAnyDatabase", db: "admin" }]
+  })

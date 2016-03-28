@@ -1,0 +1,18 @@
+---
+
+# top-level
+
+- name: install mongo base packages
+  include: mongod.yml 
+
+- name: configure config server 
+  include: configure_cs.yml tags=configure-cs
+
+- name: configure mongos server
+  include: configure_mongos.yml tags=configure-mongos
+
+- name: add shards
+  include: shards.yml tags=add-shards
+
+#- name: uninstall mongo 
+#  include: uninstall.yml tags=uninstall

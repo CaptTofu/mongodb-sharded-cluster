@@ -1,0 +1,91 @@
+---
+
+# configure plays
+
+- name: Stop the mongodb service for redhat variants
+  command: /etc/init.d/mongod stop
+  ignore_errors: true
+  when: ansible_os_family == "RedHat"
+
+- name: Stop the mongodb service for Ubuntu variants
+  service: name=mongod state=stopped
+  ignore_errors: true
+  when: ansible_os_family == "Debian"
+
+- name: set auth to false before users added
+  set_fact: 
+    mongod_auth: false
+
+- name: set mongo_type=mongod
+  set_fact:
+    mongo_type: mongod
+
+- name: Create data directory
+  file: path="{{ mongod_datadir_prefix }}/{{ mongo_type }}" owner=mongodb group=mongodb state=directory
+
+- name: create the user JS to create root user
+  template: src=user.j2 dest=/tmp/user.js
+
+- name: set fact mongo_type=mongod
+  set_fact: mongo_type=mongod
+
+- name: set fact mongod_port="{{ mongod_port }}"
+  set_fact: mongod_port="{{ mongod_port }}"
+
+- name: Create the mongodb init file for Debian
+  template: src=mongod_debian_init.j2 dest=/etc/init.d/mongod mode=755
+  when: ansible_os_family == "Debian"
+
+- name: Enable mongod service  
+  command: "{{ item }}"
+  with_items:
+    - update-rc.d mongod defaults
+    - update-rc.d mongod enable 
+  when: ansible_os_family == "Debian"
+
+- name: generate the mongod configuration file
+  template: src=mongod.conf.j2 dest=/etc/mongod.conf
+
+- name: Start the mongod service for Redhat variants to add root user
+  command: creates=/var/lock/subsys/mongod /etc/init.d/mongod start
+  when: ansible_os_family == "RedHat"
+
+- name: Restart the mongodb service for Ubuntu variants
+  service: name=mongod state=started
+  when: ansible_os_family == "Debian"
+
+- name: Pause for a 60 secs to ensure mongo is running
+  pause: seconds=60
+
+- name: Add root user to admin db
+  shell: "/usr/bin/mongo --port {{ mongod_port }} admin /tmp/user.js"
+
+- name: Create the file to initialize the mongod replica set
+  template: src=repset_init.j2 dest=/tmp/repset_init.js
+  when: mongod_replication and (mongod_repl_master == inventory_hostname or mongod_repl_master == ansible_hostname)
+
+- name: set auth to true after users added
+  set_fact: 
+    mongod_auth: true
+
+- name: regenerate the mongodb configuration file with auth set to true
+  template: src=mongod.conf.j2 dest=/etc/mongod.conf
+
+- name: Restart the mongodb service for redhat variants
+  command: creates=/var/lock/subsys/mongod /etc/init.d/mongod restart
+  when: ansible_os_family == "RedHat"
+
+- name: Restart the mongodb service for Ubuntu variants
+  service: name=mongod state=restarted
+  when: ansible_os_family == "Debian"
+
+- name: Pause for 60 before initializing repset 
+  pause: seconds=60
+  when: mongod_replication
+
+- name: Initialize the replication set
+  shell: /usr/bin/mongo --port "{{ mongod_port }}" -u "{{ mongo_admin_username }}" -p "{{ mongo_admin_pass }}" admin /tmp/repset_init.js 
+  when: mongod_replication and (mongod_repl_master == inventory_hostname or mongod_repl_master == ansible_hostname)
+
+#- name: remove user creation file
+#  file: path=/tmp/user.js state=absent

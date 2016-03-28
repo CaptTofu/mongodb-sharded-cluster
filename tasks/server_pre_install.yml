@@ -1,0 +1,27 @@
+---
+
+# sets up the host for installing the mongo server 
+
+- name: Add the OS specific varibles
+  include_vars: "{{ ansible_os_family }}.yml"
+
+- name: Create the mongodb group 
+  group: name=mongodb state=present 
+
+- name: Create the mongodb user
+  user: name=mongodb group=mongodb state=present
+
+#- name: make sure the hostname is available in /etc/hosts
+#  lineinfile: dest=/etc/hosts regexp="{{ ansible_hostname }}" line="{{ hostvars[inventory_hostname].ansible_default_ipv4.address + " " + ansible_hostname }}" state=present
+#
+- name: Create the base data directory for the mongod
+  file: path={{ mongod_datadir_prefix }} owner=mongodb group=mongodb state=directory
+  when: mongod_use_link is not defined
+
+- name: Create source base directory for the data directory link for the mongod
+  file: path={{ mongod_link_to }} owner=mongodb group=mongodb state=directory
+  when: mongod_use_link is defined
+
+- name: Create link for the base data directory for the mongodb
+  file: path={{ mongod_datadir_prefix }} owner=mongodb group=mongodb state=link src={{ mongod_link_to }}
+  when: mongod_use_link is defined

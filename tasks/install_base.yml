@@ -1,0 +1,47 @@
+---
+
+# installs everything but the server (clients,etc)
+
+
+- name: Add the OS specific varibles
+  include_vars: "{{ ansible_os_family }}.yml"
+
+- name: Install the apt key for ubuntu
+  apt_key: id=7F0CEB10 keyserver="keyserver.ubuntu.com" state=present
+  when: ansible_os_family == "Debian"
+
+- name: Install the python pycurl library
+  apt: name="{{ item }}" state=installed update_cache=yes
+  when: ansible_os_family == "Debian"
+  with_items:
+  - python-pycurl
+  - numactl
+
+- name: Install the libselinux module
+  yum: name=libselinux-python state=installed
+  when: ansible_os_family == "RedHat"
+
+- name: update apt cache
+  apt: update_cache=yes 
+  when: ansible_os_family == "Debian"
+
+- name: set up repo for Mongo on debian
+  set_fact: repo_key=main
+
+- name: set up repo key for Mongo on ubuntu
+  set_fact: repo_key=multiverse
+  when: ansible_lsb.id == "Ubuntu"
+
+- name: Install the repository for Ubuntu mongodb
+  apt_repository: repo="deb http://repo.mongodb.org/apt/{{ ansible_lsb.id|lower }} {{ ansible_lsb.codename }}/mongodb-org/3.0 {{ repo_key }}" state=present
+  when: ansible_os_family == "Debian"
+
+- name: Install the mongodb base RPM packages
+  yum: name={{ item }} state=installed
+  with_items: mongo_base_pkgs
+  when: ansible_os_family == "RedHat"
+
+- name: Install the mongodb base APT packages
+  apt: name={{ item }} state=installed update_cache=yes
+  with_items: mongo_base_pkgs
+  when: ansible_os_family == "Debian"

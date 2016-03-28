@@ -1,0 +1,27 @@
+# uninstalls mongo 
+
+- name: Add the OS specific varibles
+  include_vars: "{{ ansible_os_family }}.yml"
+
+- name: Stop the mongodb service for redhat variants
+  command: /etc/init.d/mongod stop
+  ignore_errors: true
+  when: ansible_os_family == "RedHat"
+
+- name: Stop the mongodb service for Ubuntu variants
+  service: name=mongod state=stopped
+  ignore_errors: true
+  when: ansible_os_family == "Debian"
+
+- name: remove the base data directory for the mongod
+  file: path={{ mongod_datadir_prefix }} owner=mongodb group=mongodb state=absent
+
+- name: uninstall the mongodb RPM package
+  yum: name={{ item }} state=absent
+  with_items: mongod_pkgs
+  when: ansible_os_family == "RedHat"
+
+- name: uninstall the mongodb APT package
+  apt: name={{ item }} state=absent update_cache=yes
+  with_items: mongod_pkgs
+  when: ansible_os_family == "Debian"

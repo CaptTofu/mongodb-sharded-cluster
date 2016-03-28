@@ -1,0 +1,33 @@
+---
+
+# top-level
+
+- name: install mongo base packages
+  include: install_base.yml
+  tags: 
+    - install-base
+    - server-only
+
+- name: server pre install
+  include: server_pre_install.yml
+  tags: 
+    - server-pre-install
+    - server-only
+
+- name: install server 
+  include: install_server.yml
+  tags: 
+    - install-server
+    - server-only
+
+- name: create key
+  include: keygen.yml
+  tags: 
+    - keygen
+    - server-only
+
+- name: configure mongod main server 
+  include: configure.yml 
+  tags: 
+    - configure
+    - server-only
