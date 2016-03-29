@@ -18,10 +18,10 @@
 
 - name: uninstall the mongodb RPM package
   yum: name={{ item }} state=absent
-  with_items: mongod_pkgs
+  with_items: "{{ mongod_pkgs }}"
   when: ansible_os_family == "RedHat"
 
 - name: uninstall the mongodb APT package
   apt: name={{ item }} state=absent update_cache=yes
-  with_items: mongod_pkgs
+  with_items: "{{ mongod_pkgs }}"
   when: ansible_os_family == "Debian"

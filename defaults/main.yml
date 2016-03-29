@@ -5,9 +5,12 @@
 mongod_smallfiles: "true"
 mongod_datadir_prefix: /usr/lib/mongodb/
 mongod_iface: '{{ ansible_default_ipv4.interface }}'
-mongod_port: 27001
+mongod_port: 27017
+mongos_port: 27018
+mongo_cs_port: 27019
 mongod_replication: false
 mongod_repl_servers: []
 mongod_repl_master: "localhost"
 mongod_replset_name: rs0
 mongo_admin_username: root
+mongo_admin_pass: "mongo"

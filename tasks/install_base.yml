@@ -38,10 +38,10 @@
 
 - name: Install the mongodb base RPM packages
   yum: name={{ item }} state=installed
-  with_items: mongo_base_pkgs
+  with_items: "{{ mongo_base_pkgs }}"
   when: ansible_os_family == "RedHat"
 
-- name: Install the mongodb base APT packages
+- name: Install the mongodb base packages
   apt: name={{ item }} state=installed update_cache=yes
-  with_items: mongo_base_pkgs
+  with_items: "{{ mongo_base_pkgs }}"
   when: ansible_os_family == "Debian"

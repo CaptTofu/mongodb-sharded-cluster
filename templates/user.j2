@@ -6,6 +6,7 @@ db.createUser({
       roles: [ { role: "root", db: "admin" }, 
                { role: "userAdminAnyDatabase", db: "admin" }]
   })
+{% if old_clients_flag is defined and old_clients_flag == true %}
 db.dropUser('root')
 var schema = db.system.version.findOne({"_id" : "authSchema"})
 schema.currentVersion = 3
@@ -16,3 +17,4 @@ db.createUser({
       roles: [ { role: "root", db: "admin" }, 
                { role: "userAdminAnyDatabase", db: "admin" }]
   })
+{% endif %}

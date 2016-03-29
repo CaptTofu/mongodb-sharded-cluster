@@ -6,13 +6,13 @@
   include: mongod.yml 
 
 - name: configure config server 
-  include: configure_cs.yml tags=configure-cs
+  include: configure_cs.yml
 
 - name: configure mongos server
-  include: configure_mongos.yml tags=configure-mongos
+  include: configure_mongos.yml
 
 - name: add shards
-  include: shards.yml tags=add-shards
+  include: shards.yml
 
 #- name: uninstall mongo 
-#  include: uninstall.yml tags=uninstall
+#  include: uninstall.yml
