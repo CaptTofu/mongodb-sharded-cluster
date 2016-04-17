@@ -2,6 +2,7 @@
 
 # The global variable file mongodb installation
 
+cluster_size: 3
 mongod_smallfiles: "true"
 mongod_datadir_prefix: /usr/lib/mongodb/
 mongod_iface: '{{ ansible_default_ipv4.interface }}'

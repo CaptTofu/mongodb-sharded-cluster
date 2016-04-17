@@ -87,5 +87,5 @@
   shell: /usr/bin/mongo --port "{{ mongod_port }}" -u "{{ mongo_admin_username }}" -p "{{ mongo_admin_pass }}" admin /tmp/repset_init.js 
   when: mongod_replication and (mongod_repl_master == inventory_hostname or mongod_repl_master == ansible_hostname)
 
-#- name: remove user creation file
-#  file: path=/tmp/user.js state=absent
+- name: remove user creation file
+  file: path=/tmp/user.js state=absent

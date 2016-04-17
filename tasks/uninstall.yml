@@ -12,6 +12,10 @@
   service: name=mongod state=stopped
   ignore_errors: true
   when: ansible_os_family == "Debian"
+  with_items: 
+  - mongod
+  - mongo_cs
+  - mongos
 
 - name: remove the base data directory for the mongod
   file: path={{ mongod_datadir_prefix }} owner=mongodb group=mongodb state=absent

@@ -1,2 +1,4 @@
-sh.addShard("{{ ansible_nodename }}/{{ ansible_nodename }}:{{ mongod_port }}")
+{% for mongod_host, repset in mongod_repset_members.iteritems() %} 
+sh.addShard("{{ repset }}/{{ mongod_host }}:{{ mongod_port }}")
 printjson(rs.status())
+{% endfor %}

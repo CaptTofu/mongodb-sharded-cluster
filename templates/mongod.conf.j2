@@ -1,5 +1,10 @@
 # mongo.conf
 
+{% if mongo_type == "mongo_cs" %}
+# config server
+configsvr = true
+{% endif %}
+
 # where to log
 {% if ansible_os_family == "RedHat" %}
 logpath=/var/log/mongo/{{ mongo_type }}.log

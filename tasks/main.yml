@@ -4,15 +4,30 @@
 
 - name: install mongo base packages
   include: mongod.yml 
+  tags:
+  - mongod
 
 - name: configure config server 
   include: configure_cs.yml
+  when: inventory_hostname in groups['config-servers']
+  tags: 
+  - cs
 
 - name: configure mongos server
   include: configure_mongos.yml
+  when: inventory_hostname in groups['mongos-server']
+  tags:
+  - mongos
 
 - name: add shards
   include: shards.yml
+  when: inventory_hostname in groups['mongos-server']
+  tags: 
+  - mongos
+  - shards
 
-#- name: uninstall mongo 
-#  include: uninstall.yml
+- name: uninstall mongo 
+  include: uninstall.yml
+  when: uninstall is defined
+  tags:
+  - uninstall

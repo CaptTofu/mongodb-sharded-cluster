@@ -3,13 +3,17 @@
 
 
 - name: Create the file to initialize the mongod Shard
-  template: src=shard_init.j2 dest=/tmp/shard_init_{{ ansible_nodename }}.js
-  delegate_to: "{{ item.key }}"
-  with_dict: "{{ mongos_servers }}"
+  #template: src=shard_init.j2 dest=/tmp/shard_init_{{ ansible_nodename }}.js
+  template: src=shard_init.j2 dest=/tmp/shard_init.js
+  delegate_to: "{{ item }}"
+  with_items: "{{ mongos_servers }}"
+  when: inventory_hostname == mongod_repl_master
 
 - name: Add the shard to the mongos 
-  shell: /usr/bin/mongo localhost:{{ mongos_port }}/admin -u {{ mongo_admin_username }} -p {{ mongo_admin_pass }} /tmp/shard_init_{{ ansible_nodename }}.js
-  delegate_to: '{{ item.key }}'
-  with_dict : "{{ mongos_servers }}"
+  #shell: /usr/bin/mongo localhost:{{ mongos_port }}/admin -u {{ mongo_admin_username }} -p {{ mongo_admin_pass }} /tmp/shard_init_{{ ansible_nodename }}.js
+  shell: /usr/bin/mongo localhost:{{ mongos_port }}/admin -u {{ mongo_admin_username }} -p {{ mongo_admin_pass }} /tmp/shard_init.js
+  delegate_to: '{{ item }}'
+  with_items: "{{ mongos_servers }}"
+  when: inventory_hostname == mongod_repl_master
 
 
