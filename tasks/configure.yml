@@ -30,7 +30,7 @@
   set_fact: mongo_type=mongod
 
 - name: set fact mongod_port="{{ mongod_port }}"
-  set_fact: mongod_port="{{ mongod_port }}"
+  set_fact: mongod_server_port="{{ mongod_port }}"
 
 - name: Create the mongodb init file for Debian
   template: src=mongod_debian_init.j2 dest=/etc/init.d/mongod mode=755

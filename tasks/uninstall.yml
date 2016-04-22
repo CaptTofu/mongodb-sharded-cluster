@@ -9,13 +9,12 @@
   when: ansible_os_family == "RedHat"
 
 - name: Stop the mongodb service for Ubuntu variants
-  service: name=mongod state=stopped
+  service: name="{{ item }}" enabled=no state=stopped
   ignore_errors: true
   when: ansible_os_family == "Debian"
   with_items: 
   - mongod
   - mongo_cs
-  - mongos
 
 - name: remove the base data directory for the mongod
   file: path={{ mongod_datadir_prefix }} owner=mongodb group=mongodb state=absent
@@ -26,6 +25,6 @@
   when: ansible_os_family == "RedHat"
 
 - name: uninstall the mongodb APT package
-  apt: name={{ item }} state=absent update_cache=yes
+  apt: name="{{ item }}" state=absent update_cache=yes
   with_items: "{{ mongod_pkgs }}"
   when: ansible_os_family == "Debian"

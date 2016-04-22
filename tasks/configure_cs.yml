@@ -3,8 +3,8 @@
 - name: set fact mongo_type=mongo_cs
   set_fact: mongo_type=mongo_cs
   
-- name: set mongo_cs port
-  set_fact: mongod_port="{{ mongo_cs_port }}"
+- name: set config mongo to run on port "{{ mongo_cs_port }}"
+  set_fact: mongod_server_port="{{ mongo_cs_port }}"
  
 - name: Create config server data directory
   file: path="{{ mongod_datadir_prefix }}/{{ mongo_type }}" owner=mongodb group=mongodb state=directory

@@ -10,7 +10,6 @@
   when: inventory_hostname == mongod_repl_master
 
 - name: Add the shard to the mongos 
-  #shell: /usr/bin/mongo localhost:{{ mongos_port }}/admin -u {{ mongo_admin_username }} -p {{ mongo_admin_pass }} /tmp/shard_init_{{ ansible_nodename }}.js
   shell: /usr/bin/mongo localhost:{{ mongos_port }}/admin -u {{ mongo_admin_username }} -p {{ mongo_admin_pass }} /tmp/shard_init.js
   delegate_to: '{{ item }}'
   with_items: "{{ mongos_servers }}"

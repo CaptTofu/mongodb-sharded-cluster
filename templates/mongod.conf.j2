@@ -32,14 +32,12 @@ smallfiles={{ mongod_smallfiles }}
 pidfilepath = {{ mongod_datadir_prefix }}/{{ mongo_type }}/{{ mongo_type }}.pid
 {% endif %}
 
-port = {{ mongod_port }}
-
-# Listen to local interface only. Comment out to listen on all interfaces. 
-# bind_ip = 127.0.0.1
+port = {{ mongod_server_port }}
 
 {% if mongo_type == 'mongos' %}
 configdb = {{ mongod_config_servers|join(',') }}
 {% endif %}
+port = {{ mongos_port }}
 # Disables write-ahead journaling
 # nojournal = true
 

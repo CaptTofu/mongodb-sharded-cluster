@@ -3,14 +3,14 @@
 - name: set fact mongod_auth=true
   set_fact: mongod_auth=true
 
+- name: set mongo port to "{{ mongos_port }}" 
+  set_fact: mongod_server_port="{{ mongos_port }}"
+
 - name: set fact mongo_type=mongos
   set_fact: mongo_type=mongos
 
 - name: Create config server data directory
   file: path="{{ mongod_datadir_prefix }}/{{ mongo_type }}" owner=mongodb group=mongodb state=directory
-
-- name: set fact mongod_port="{{ mongos_port }}"
-  set_fact: mongod_port="{{ mongos_port }}"
 
 - name: Create the mongos init file for Debian
   template: src=mongod_debian_init.j2 dest=/etc/init.d/mongos mode=755
